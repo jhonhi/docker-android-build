@@ -68,7 +68,16 @@ jobs:
           make -j1
           #将编译好的文件复制到atifact目录方便下载
           name: Prepare artifact
-          run:
+          run: |
+            rm -rf ./artifact/
+            mkdir -p ./artifact/
+            cp -r out/*  ./artifact/
+         name: Upload artifact 
+         uses: actions/upload-artifact@master
+         with:
+           name: android-10
+           path: ./artifact/
+           
 
 
 
