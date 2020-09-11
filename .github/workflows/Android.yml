@@ -1,0 +1,74 @@
+#
+# This is free software, lisence use MIT.
+# 
+# Copyright (C) 2019 P3TERX <https://p3terx.com>
+# Copyright (C) 2019 KFERMercer <KFER.Mercer@gmail.com>
+# 
+# <https://github.com/KFERMercer/OpenWrt-CI>
+#
+name: Android-10
+on:
+  push:
+    branches: 
+      - master
+  # schedule:
+  #   - cron: 0 20 * * *
+  # release:
+  #   types: [published]
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+        with:
+          ref: master
+      - name: Initialization environment
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          docker rmi `docker images -q`
+          echo "Deleting files, please wait ..."
+          #安装工具
+          sudo -E apt-get -y install git
+          sudo -E apt-get -y install curl  
+          sudo -E apt-get -y install python
+          sudo -E apt-get -y install openjdk8
+          #安装依赖
+          sudo -E apt-get install libx11-dev:i386 libreadline6-dev:i386 libgl1-mesa-dev g++-multilib
+          sudo -E apt-get install -y git flex bison gperf build-essential libncurses5-dev:i386
+          sudo -E apt-get install tofrodos python-markdown libxml2-utils xsltproc zlib1g-dev:i386
+          sudo -E apt-get install dpkg-dev libsdl1.2-dev libesd0-dev
+          sudo -E apt-get install git-core gnupg flex bison gperf build-essential
+          sudo -E apt-get install zip curl zlib1g-dev gcc-multilib g++-multilib
+          sudo -E apt-get install libc6-dev-i386
+          sudo -E apt-get install lib32ncurses5-dev x11proto-core-dev libx11-dev
+          sudo -E apt-get install libgl1-mesa-dev libxml2-utils xsltproc unzip m4
+          sudo -E apt-get install lib32z-dev ccache
+          sudo -E apt-get install libssl-dev
+          #下载repo启动器并设置环境变量
+          mkdir ~/bin
+          echo "PATH=~/bin:\$PATH" >> ~/.bashrc
+          source ~/.bashrc
+          curl https://mirrors.tuna.tsinghua.edu.cn/git/git-repo > ~/bin/repo
+          chmod a+x ~/bin/repo
+          export REPO_URL='https://mirrors.tuna.tsinghua.edu.cn/git/git-repo/'
+          #配置git账号
+          git config --global user.email "xxxxxxx@gmail.com" 
+          git config --global user.name "xxxxx"
+          #下载安卓源码
+          mkdir aosp
+          cd aosp
+          repo init -u https://aosp.tuna.tsinghua.edu.cn/platform/manifest
+          repo init -u https://aosp.tuna.tsinghua.edu.cn/platform/manifest -b android-10.0.0_r10
+          repo sync
+          #编译源码
+          source build/envsetup.sh
+          lunch 21 
+          make -j1
+
+
+
+
+          
+      
