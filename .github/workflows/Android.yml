@@ -66,6 +66,9 @@ jobs:
           source build/envsetup.sh
           lunch 21 
           make -j1
+          #将编译好的文件复制到atifact目录方便下载
+          name: Prepare artifact
+          run:
 
 
 
